@@ -14,6 +14,8 @@
 		933F443E1F44379E0026E6F9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 933F443C1F44379E0026E6F9 /* LaunchScreen.storyboard */; };
 		933F44411F44379E0026E6F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 933F44401F44379E0026E6F9 /* main.m */; };
 		933F444B1F44379E0026E6F9 /* watchdogTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 933F444A1F44379E0026E6F9 /* watchdogTests.m */; };
+		933F44571F4438590026E6F9 /* Watchdog.m in Sources */ = {isa = PBXBuildFile; fileRef = 933F44561F4438590026E6F9 /* Watchdog.m */; };
+		933F445A1F4458160026E6F9 /* BSBacktraceLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 933F44581F44552B0026E6F9 /* BSBacktraceLogger.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +42,10 @@
 		933F44461F44379E0026E6F9 /* watchdogTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = watchdogTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		933F444A1F44379E0026E6F9 /* watchdogTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = watchdogTests.m; sourceTree = "<group>"; };
 		933F444C1F44379E0026E6F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		933F44551F4438590026E6F9 /* Watchdog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Watchdog.h; sourceTree = "<group>"; };
+		933F44561F4438590026E6F9 /* Watchdog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Watchdog.m; sourceTree = "<group>"; };
+		933F44581F44552B0026E6F9 /* BSBacktraceLogger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BSBacktraceLogger.m; sourceTree = "<group>"; };
+		933F44591F44552B0026E6F9 /* BSBacktraceLogger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BSBacktraceLogger.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,8 +89,12 @@
 			children = (
 				933F44311F44379E0026E6F9 /* AppDelegate.h */,
 				933F44321F44379E0026E6F9 /* AppDelegate.m */,
+				933F44551F4438590026E6F9 /* Watchdog.h */,
+				933F44561F4438590026E6F9 /* Watchdog.m */,
 				933F44341F44379E0026E6F9 /* ViewController.h */,
 				933F44351F44379E0026E6F9 /* ViewController.m */,
+				933F44591F44552B0026E6F9 /* BSBacktraceLogger.h */,
+				933F44581F44552B0026E6F9 /* BSBacktraceLogger.m */,
 				933F44371F44379E0026E6F9 /* Main.storyboard */,
 				933F443A1F44379E0026E6F9 /* Assets.xcassets */,
 				933F443C1F44379E0026E6F9 /* LaunchScreen.storyboard */,
@@ -203,8 +213,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				933F445A1F4458160026E6F9 /* BSBacktraceLogger.m in Sources */,
 				933F44361F44379E0026E6F9 /* ViewController.m in Sources */,
 				933F44411F44379E0026E6F9 /* main.m in Sources */,
+				933F44571F4438590026E6F9 /* Watchdog.m in Sources */,
 				933F44331F44379E0026E6F9 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
