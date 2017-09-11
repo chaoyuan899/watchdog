@@ -13,7 +13,7 @@
 #import <objc/runtime.h>
 
 
-#define defaultThreshold 0.04
+#define defaultThreshold 0.020
 #define DEPTH 10
 
 typedef NS_ENUM(NSUInteger,WATCH_LEVEL) {
@@ -64,9 +64,7 @@ typedef NS_ENUM(NSUInteger,WATCH_LEVEL) {
 
 -(void)log {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        NSLog(@"cpu:%f",[self cpu]);
-        NSLog(@"memory:%f",[self memory]);
-        BSLOG_MAIN
+        BSLOG_ALL
     });
 }
 
@@ -137,96 +135,91 @@ typedef NS_ENUM(NSUInteger,WATCH_LEVEL) {
 
 
 
-#pragma mark -- CPU
-@implementation Watchdog(CPU)
-#pragma mark -- CPU
-//此算法是获取当前APP的CPU，数值与Instrument、GT接近
-//https://github.com/TianJIANG/ios_monitor
-- (float)cpu {
-    kern_return_t kr;
-    task_info_data_t tinfo;
-    mach_msg_type_number_t task_info_count;
-    
-    task_info_count = TASK_INFO_MAX;
-    kr = task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)tinfo, &task_info_count);
-    if (kr != KERN_SUCCESS) {
-        return -1;
-    }
-    
-    task_basic_info_t      basic_info;
-    thread_array_t         thread_list;
-    mach_msg_type_number_t thread_count;
-    
-    thread_info_data_t     thinfo;
-    mach_msg_type_number_t thread_info_count;
-    
-    thread_basic_info_t basic_info_th;
-    uint32_t stat_thread = 0; // Mach threads
-    
-    basic_info = (task_basic_info_t)tinfo;
-    
-    // get threads in the task
-    kr = task_threads(mach_task_self(), &thread_list, &thread_count);
-    if (kr != KERN_SUCCESS) {
-        return -1;
-    }
-    if (thread_count > 0)
-        stat_thread += thread_count;
-    
-    long tot_sec = 0;
-    long tot_usec = 0;
-    float tot_cpu = 0;
-    int j;
-    
-    for (j = 0; j < thread_count; j++)
-    {
-        thread_info_count = THREAD_INFO_MAX;
-        kr = thread_info(thread_list[j], THREAD_BASIC_INFO,
-                         (thread_info_t)thinfo, &thread_info_count);
-        if (kr != KERN_SUCCESS) {
-            return -1;
-        }
-        
-        basic_info_th = (thread_basic_info_t)thinfo;
-        
-        if (!(basic_info_th->flags & TH_FLAGS_IDLE)) {
-            tot_sec = tot_sec + basic_info_th->user_time.seconds + basic_info_th->system_time.seconds;
-            tot_usec = tot_usec + basic_info_th->system_time.microseconds + basic_info_th->system_time.microseconds;
-            tot_cpu = tot_cpu + basic_info_th->cpu_usage / (float)TH_USAGE_SCALE * 100.0;
-        }
-        
-    } // for each thread
-    
-    kr = vm_deallocate(mach_task_self(), (vm_offset_t)thread_list, thread_count * sizeof(thread_t));
-    assert(kr == KERN_SUCCESS);
-    
-//    NSLog(@"CPU Usage: %f \n", tot_cpu);
-    return tot_cpu;
-}
-@end
+//#pragma mark -- CPU
+//@implementation Watchdog(CPU)
+////此算法是获取当前APP的CPU，数值与Instrument、GT接近
+////https://github.com/TianJIANG/ios_monitor
+//- (float)total_cpu {
+//    kern_return_t kr;
+//    task_info_data_t tinfo;
+//    mach_msg_type_number_t task_info_count;
+//    
+//    task_info_count = TASK_INFO_MAX;
+//    kr = task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)tinfo, &task_info_count);
+//    if (kr != KERN_SUCCESS) {
+//        return -1;
+//    }
+//    
+//    task_basic_info_t      basic_info;
+//    thread_array_t         thread_list;
+//    mach_msg_type_number_t thread_count;
+//    
+//    thread_info_data_t     thinfo;
+//    mach_msg_type_number_t thread_info_count;
+//    
+//    thread_basic_info_t basic_info_th;
+//    uint32_t stat_thread = 0; // Mach threads
+//    
+//    basic_info = (task_basic_info_t)tinfo;
+//    
+//    // get threads in the task
+//    kr = task_threads(mach_task_self(), &thread_list, &thread_count);
+//    if (kr != KERN_SUCCESS) {
+//        return -1;
+//    }
+//    if (thread_count > 0)
+//        stat_thread += thread_count;
+//    
+//    float tot_cpu = 0;
+//    int j;
+//    
+//    for (j = 0; j < thread_count; j++)
+//    {
+//        thread_info_count = THREAD_INFO_MAX;
+//        kr = thread_info(thread_list[j], THREAD_BASIC_INFO,
+//                         (thread_info_t)thinfo, &thread_info_count);
+//        if (kr != KERN_SUCCESS) {
+//            return -1;
+//        }
+//        
+//        basic_info_th = (thread_basic_info_t)thinfo;
+//        
+//        if (!(basic_info_th->flags & TH_FLAGS_IDLE)) {
+//            tot_cpu = tot_cpu + basic_info_th->cpu_usage / (float)TH_USAGE_SCALE * 100.0;
+//        }
+//        
+//    } // for each thread
+//    
+//    kr = vm_deallocate(mach_task_self(), (vm_offset_t)thread_list, thread_count * sizeof(thread_t));
+//    assert(kr == KERN_SUCCESS);
+//    
+////    NSLog(@"CPU Usage: %f \n", tot_cpu);
+//    return tot_cpu;
+//}
+//@end
 
 
 
 
 
-#pragma mark -- Memory
-@implementation Watchdog(Memory)
-//此算法是获取当前APP的内存，数值与GT的一致，与Instrument不一致
-- (float)memory {
-    task_basic_info_data_t taskInfo;
-    mach_msg_type_number_t infoCount = TASK_BASIC_INFO_COUNT;
-    kern_return_t kernReturn = task_info(mach_task_self(),
-                                         TASK_BASIC_INFO, (task_info_t)&taskInfo, &infoCount);
-    
-    if(kernReturn != KERN_SUCCESS) {
-        return -1;
-    }
-    
-    float useMemory = taskInfo.resident_size / 1024.0 / 1024.0;
-//    NSLog(@"Memory Usage: %f", useMemory);
-    return useMemory;
-}
-@end
+//#pragma mark -- Memory
+//@implementation Watchdog(Memory)
+////此算法是获取当前APP的内存，数值与GT的一致，与Instrument不一致
+//- (float)memory {
+//    task_basic_info_data_t taskInfo;
+//    mach_msg_type_number_t infoCount = TASK_BASIC_INFO_COUNT;
+//    kern_return_t kernReturn = task_info(mach_task_self(),
+//                                         TASK_BASIC_INFO, (task_info_t)&taskInfo, &infoCount);
+//    
+//    if(kernReturn != KERN_SUCCESS) {
+//        return -1;
+//    }
+//    
+//    float useMemory = taskInfo.resident_size / 1024.0 / 1024.0;
+////    NSLog(@"Memory Usage: %f", useMemory);
+//    return useMemory;
+//}
+//@end
 
 
 

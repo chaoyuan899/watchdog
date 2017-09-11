@@ -23,15 +23,15 @@ typedef void(^PingThreadHandle)(void);
 
 
 
-@interface Watchdog(CPU)
-- (float)cpu;
-@end
-
-
-
-@interface Watchdog(Memory)
-- (float)memory;
-@end
+//@interface Watchdog(CPU)
+//- (float)total_cpu;
+//@end
+//
+//
+//
+//@interface Watchdog(Memory)
+//- (float)memory;
+//@end
 
 
 typedef void (^TickOutput)(float value);
